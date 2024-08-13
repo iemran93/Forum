@@ -1,0 +1,45 @@
+package handlers
+
+import (
+	"encoding/json"
+	"fmt"
+	"forumProject/internal/database"
+	"log"
+	"net/http"
+)
+
+func LikeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		userID, err := SessionActive(r)
+		if err != nil {
+			response := Response{Message: "Login to add likes!", Error: err.Error()}
+			jsonResponse(w, response, http.StatusMethodNotAllowed)
+			return
+		}
+		var data struct {
+			Type       string `json:"type"`
+			ID         int    `json:"id"`
+			EntityType string `json:"entityType"`
+		}
+		json.NewDecoder(r.Body).Decode(&data)
+		likes, err := database.Liking(data.EntityType, data.Type, data.ID, userID)
+		if err != nil {
+			log.Println(err)
+			response := Response{Message: "Error processing like", Error: err.Error()}
+			jsonResponse(w, response, http.StatusInternalServerError)
+			return
+		}
+		response := Response{
+			Message: fmt.Sprintf("%d,%d", likes[0], likes[1]),
+		}
+		jsonResponse(w, response, http.StatusOK)
+	} else {
+		response := Response{Message: "Invalid request method"}
+		jsonResponse(w, response, http.StatusMethodNotAllowed)
+	}
+}
+func jsonResponse(w http.ResponseWriter, data interface{}, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
+}

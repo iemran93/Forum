@@ -1,0 +1,60 @@
+{{template "base" .}}
+
+{{define "content"}}
+<section class="auth-section">
+    <h1>Sign Up</h1>
+    <form action="/signup/submit" method="post" id="signupForm" onsubmit="handleSignup(event)">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="password-rep">Repeat Password</label>
+            <input type="password" id="password-rep" name="password-rep" required>
+        </div>
+        <button type="submit">Sign Up</button>
+        <div id="error-message" class="error-message"></div>
+    </form>
+</section>
+{{end}}
+
+{{define "js"}}
+<script>
+    async function handleSignup(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const formDataObject = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/signup/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formDataObject)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Signup successful');
+            // Optionally, redirect to another page
+            window.location.href = '/';
+        } else {
+            const errorMessage = result.message || 'Signup failed';
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = errorMessage;
+            errorElement.style.display = 'block';
+        }
+    }
+</script>
+{{end}}

@@ -1,0 +1,53 @@
+{{template "base" .}}
+
+{{define "content"}}
+<section class="auth-section">
+    <h1>Login</h1>
+    <form action="/login/submit" method="post" id="loginform" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+        <div id="error-message" class="error-message"></div>
+    </form>
+</section>
+{{end}}
+
+{{define "js"}}
+<script>
+    async function handleLogin(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const formDataObject = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/login/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formDataObject)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Login successful');
+            // Optionally, redirect to another page
+            window.location.href = '/';
+        } else {
+            const errorMessage = result.message || 'Signup failed';
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = errorMessage;
+            errorElement.style.display = 'block';
+        }
+    }
+</script>
+{{end}}
