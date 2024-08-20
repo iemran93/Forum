@@ -3,13 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"regexp"
 	"time"
 
 	"forumProject/internal/database"
 	"forumProject/internal/models"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func AuthenticateUser(uname string, psw string) (int, error) {
@@ -19,8 +20,10 @@ func AuthenticateUser(uname string, psw string) (int, error) {
 	}
 
 	for _, user := range users {
-		if user.Username == uname && user.Password == psw {
-			return user.ID, nil
+		if user.Username == uname {
+			if CheckPasswordHash(psw, user.Password) {
+				return user.ID, nil
+			}
 		}
 	}
 
@@ -36,7 +39,6 @@ func LoginSubmitHandler(w http.ResponseWriter, r *http.Request) {
 			jsonResponse(w, response, http.StatusInternalServerError)
 			return
 		}
-		log.Println(data.Username, data.Password)
 		user, err := AuthenticateUser(data.Username, data.Password)
 		if err != nil {
 			response := Response{Message: "Unauthorized"}
@@ -50,7 +52,7 @@ func LoginSubmitHandler(w http.ResponseWriter, r *http.Request) {
 				jsonResponse(w, response, http.StatusInternalServerError)
 				return
 			}
-		
+
 			// Create new session
 			cookie, err := SetCookie(user)
 			if err != nil {
@@ -61,7 +63,7 @@ func LoginSubmitHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, &cookie)
 			response := Response{Message: "Login successful"}
 			jsonResponse(w, response, http.StatusCreated)
-		}		
+		}
 	} else {
 		response := Response{Message: "Invalid request method"}
 		jsonResponse(w, response, http.StatusMethodNotAllowed)
@@ -109,6 +111,15 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
+
+		hash, err := hashPassword(data.Password)
+		if err != nil {
+			response := Response{Message: "Internal server error"}
+			jsonResponse(w, response, http.StatusInternalServerError)
+			return
+		}
+
+		data.Password = hash
 
 		err = database.CreateUser(data)
 		if err != nil {
@@ -165,3 +176,12 @@ func validUserData(username, email string) (bool, string) {
 	}
 }
 
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}

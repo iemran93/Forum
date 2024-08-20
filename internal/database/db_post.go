@@ -21,6 +21,7 @@ func GetPosts(postID int, typeOf string) ([]models.Post, error) {
 		sqlStm += " WHERE posts.id = ?"
 		rows, err = DB.Query(sqlStm, postID)
 	} else {
+		sqlStm += " ORDER BY posts.created_at DESC" // Order by latest created
 		rows, err = DB.Query(sqlStm)
 	}
 

@@ -1,5 +1,2 @@
-login nav bar to show correctly in all pages
-hash pass
-new posts first
 filter logic design(drop down)
 empty category

@@ -60,9 +60,16 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	loggedIn := false
+	_, err = SessionActive(r)
+	if err == nil {
+		loggedIn = true
+	}
+
 	pd := PageData{
 		Posts:    post,
 		Comments: comments,
+		LoggedIn: loggedIn,
 	}
 
 	t, _ := template.ParseFiles("web/post.html", "web/base.html")
