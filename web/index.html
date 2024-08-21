@@ -36,10 +36,10 @@
             <p><strong>Content:</strong> {{.Content}}</p>
             <p><strong>Categories:</strong> {{range .Categories}}{{.Name}} {{end}}</p>
             <p><strong>Created At:</strong> {{.CreatedAt}}</p>
-            <a href="/post?id={{.ID}}" class="button">Add comment</a>
-            <button onclick="handleLike('post', '{{.ID}}', 'like')">Like</button>
+            <a href="/post?id={{.ID}}" class="button comment-button">Add comment</a>
+            <button onclick="handleLike('post', '{{.ID}}', 'like')" class="like-button">Like</button>
             <span class="like-count">{{.Likes}}</span>
-            <button onclick="handleLike('post', '{{.ID}}', 'dislike')">Dislike</button>
+            <button onclick="handleLike('post', '{{.ID}}', 'dislike')" class="dislike-button">Dislike</button>
             <span class="dislike-count">{{.Dislikes}}</span>
         </div>
     </article>

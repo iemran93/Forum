@@ -11,17 +11,17 @@
 
 <body>
     <div class="large-header" id="large-header"> <!-- Add this div with the class and ID -->
-        <h1 class="main-title">Forum</h1> <!-- Add a main title for the large header -->
+        <h1 class="main-title"><span>Web</span> Forum</h1> <!-- Add a main title for the large header -->
     </div>
     <header>
-        <nav>
+        <nav class="nav">
             <ul>
                 <li><a href="/">Home</a></li>
                 {{ if .LoggedIn }}
-                <li><a href="#" id="logoutLink">Logout</a></li>
+                <li class="right"><a href="#" id="logoutLink">Logout</a></li>
                 {{ else }}
-                <li><a href="/login">Login</a></li>
-                <li><a href="/signup">Sign Up</a></li>
+                <li class="right"><a href="/login">Login</a></li>
+                <li class="right"><a href="/signup">Sign Up</a></li>
                 {{ end }}
                 {{ if .LoggedIn }}
                 <li><a href="/postform">Create Post</a></li>

@@ -4,7 +4,7 @@
 
 <!-- display posts -->
 {{range .Posts}}
-<div>
+<div class="post-card">
     <h2>{{.Title}}</h2>
     <p><strong>Post ID:</strong> {{.ID}}</p>
     <p><strong>User ID:</strong> {{.UserID}}</p>
@@ -15,33 +15,33 @@
 </div>
 <hr>
 
-
 <!-- add comment -->
-<form action="/comment" method="post" id="addcomment" onsubmit="handleAddComment(event)">
-    <input type="hidden" name="post_id" value="{{.ID}}">
-    <textarea name="content" rows="10" cols="50" placeholder="Start typing here" required></textarea>
-    <br>
-    <button type="submit">Add comment</button>
-    <br>
-    <div id="error-message" style="display:none; color: red;"></div>
-</form>
+<div class="comment-section">
+    <form action="/comment" method="post" id="addcomment" onsubmit="handleAddComment(event)">
+        <input type="hidden" name="post_id" value="{{.ID}}">
+        <textarea name="content" rows="5" cols="50" placeholder="Start typing here" required></textarea>
+        <br>
+        <button type="submit" class="comment-button">Add comment</button>
+        <br>
+        <div id="error-message" class="error-message" style="display:none;"></div>
+    </form>
+</div>
 {{end}}
 
 <!-- display comments -->
 {{range .Comments}}
-<div id="comment-{{.ID}}" style="border: 1px solid #ccc; margin: 10px;">
+<div id="comment-{{.ID}}" class="post-card">
     <h3>{{.Username}}</h3>
     <p>{{.CreatedAt}}</p>
     <p>{{.Content}}</p>
 
-    <button onclick="handleLike('comment', '{{.ID}}', 'like')">Like</button>
+    <button onclick="handleLike('comment', '{{.ID}}', 'like')" class="like-button">Like</button>
     <span class="like-count">{{.Likes}}</span>
-    <button onclick="handleLike('comment', '{{.ID}}', 'dislike')">Dislike</button>
+    <button onclick="handleLike('comment', '{{.ID}}', 'dislike')" class="dislike-button">Dislike</button>
     <span class="dislike-count">{{.Dislikes}}</span>
 </div>
 <hr>
 {{end}}
-
 
 {{end}}
 
@@ -84,28 +84,28 @@
     });
 
     async function handleLike(entityType, entityId, likeType) {
-            const response = await fetch('/like', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: likeType,
-                    id: parseInt(entityId),
-                    entityType: entityType
-                })
+        const response = await fetch('/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: likeType,
+                id: parseInt(entityId),
+                entityType: entityType
             })
-            const result = await response.json();
-            const [likes, dislikes] = result.message.split(',').map(Number);
-            if (response.ok) {
-                const likeCount = document.querySelector(`#${entityType}-${entityId} .like-count`);
-                likeCount.innerText = `${likes}`
-                const dislikeCount = document.querySelector(`#${entityType}-${entityId} .dislike-count`);
-                dislikeCount.innerText = `${dislikes}`
-            } else {
-                const errorMessage = result.message || 'failed';
-                alert(errorMessage)
-            }
+        })
+        const result = await response.json();
+        const [likes, dislikes] = result.message.split(',').map(Number);
+        if (response.ok) {
+            const likeCount = document.querySelector(`#${entityType}-${entityId} .like-count`);
+            likeCount.innerText = `${likes}`
+            const dislikeCount = document.querySelector(`#${entityType}-${entityId} .dislike-count`);
+            dislikeCount.innerText = `${dislikes}`
+        } else {
+            const errorMessage = result.message || 'failed';
+            alert(errorMessage)
         }
+    }
 </script>
 {{ end }}
