@@ -37,6 +37,12 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
+	// serve js files
+	http.HandleFunc("/js/", func(w http.ResponseWriter, r *http.Request) {
+		filePath := filepath.Join("js", r.URL.Path[len("/js/"):])
+		http.ServeFile(w, r, filePath)
+	})
+
 	fmt.Println("localhost:8080/")
 	// listen and serve
 	http.ListenAndServe(":8080", nil)
