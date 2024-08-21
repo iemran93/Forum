@@ -13,7 +13,6 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		filterParams := r.URL.Query()
-		log.Printf("Filter params: %v", filterParams)
 		var filteredPosts []models.Post
 
 		// filter by category

@@ -21,7 +21,7 @@
         <input type="hidden" name="post_id" value="{{.ID}}">
         <textarea name="content" rows="5" cols="50" placeholder="Start typing here" required></textarea>
         <br>
-        <button type="submit" class="comment-button">Add comment</button>
+        <button type="submit" class="btn">Add comment</button>
         <br>
         <div id="error-message" class="error-message" style="display:none;"></div>
     </form>
@@ -43,4 +43,8 @@
 <hr>
 {{end}}
 
+{{end}}
+
+{{ define "js"}}
+<script src="/js/post.js"></script>
 {{end}}
