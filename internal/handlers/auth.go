@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"regexp"
 	"time"
 
 	"forumProject/internal/database"
+	"forumProject/internal/functions"
 	"forumProject/internal/models"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func AuthenticateUser(uname string, psw string) (int, error) {
@@ -21,7 +19,7 @@ func AuthenticateUser(uname string, psw string) (int, error) {
 
 	for _, user := range users {
 		if user.Username == uname {
-			if CheckPasswordHash(psw, user.Password) {
+			if functions.CheckPasswordHash(psw, user.Password) {
 				return user.ID, nil
 			}
 		}
@@ -86,7 +84,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pass, errmsg := validUserData(data.Username, data.Email)
+		pass, errmsg := functions.ValidUserData(data.Username, data.Email)
 		if !pass {
 			response := Response{Message: errmsg}
 			jsonResponse(w, response, http.StatusBadRequest)
@@ -112,7 +110,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		hash, err := hashPassword(data.Password)
+		hash, err := functions.HashPassword(data.Password)
 		if err != nil {
 			response := Response{Message: "Internal server error"}
 			jsonResponse(w, response, http.StatusInternalServerError)
@@ -160,28 +158,4 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := Response{Message: "Logout successful"}
 	jsonResponse(w, response, http.StatusOK)
-}
-
-func validUserData(username, email string) (bool, string) {
-	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
-	usernameRegex := regexp.MustCompile(`^[a-zA-Z0-9_-]{3,16}$`)
-	if emailRegex.MatchString(email) {
-		if usernameRegex.MatchString(username) {
-			return true, ""
-		} else {
-			return false, "Username not valid"
-		}
-	} else {
-		return false, "Email not valid"
-	}
-}
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
-}
-
-func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }

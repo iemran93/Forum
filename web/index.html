@@ -1,35 +1,31 @@
 {{template "base" .}}
 
-{{define "content"}}
-<section class="filter-section">
-    <h2>Filter By Category</h2>
-    <form id="filterForm" action="/filterCategory" method="POST">
-        {{range .Categories}}
-        <label class="lns-checkbox">
-            <input type="checkbox" name="category" value="{{.ID}}">
-            <span>{{.Name}}</span>
-        </label>
-        {{end}}
-        <button type="submit">Filter</button>
-    </form>
-</section>
+{{define "extraBase"}}
+<li><a href="" id="filterLink">Filter</a></li>
+{{end}}
 
-{{ if .LoggedIn }}
-<section class="filter-section">
-    <h2>Filter Posts</h2>
-    <form id="filterLikesForm" action="/filterByLikes" method="GET">
-        <label class="lns-checkbox">
-            <input type="checkbox" name="showLiked" value="true">
-            <span>Show Liked Posts</span>
-        </label>
-        <label class="lns-checkbox">
-            <input type="checkbox" name="showCreated" value="true">
-            <span>Show Created Posts</span>
-        </label>
+{{define "content"}}
+<!-- filer -->
+<div id="filterContainer" style="display: none;">
+    <form action="/filter" method="get" id="filterForm">
+        <div>
+            {{range .Categories}}
+            <input type="checkbox" id="{{.Name}}" name="categories" value="{{.Name}}">
+            <label for="{{.Name}}"> {{.Name}}</label>
+            {{end}}
+        </div>
+        {{ if .LoggedIn }}
+        <input type="checkbox" id="crposts" name="byUser" value="crposts">
+        <label for="crposts">Created posts</label>
+        <input type="checkbox" id="likeposts" name="byUser" value="likeposts">
+        <label for="likeposts">Liked posts</label>
+        {{ end }}
+        <br>
         <button type="submit">Filter</button>
+        <button type="button" onclick="clearForm()">Clear</button>
     </form>
-</section>
-{{ end }}
+</div>
+
 <section class="posts-section">
     <h1>Forum Posts</h1>
     {{range .Posts}}
@@ -54,10 +50,10 @@
 {{end}}
 {{define "js"}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {
-            logoutLink.addEventListener('click', async function(event) {
+            logoutLink.addEventListener('click', async function (event) {
                 event.preventDefault();
                 try {
                     const response = await fetch('/logout', {
@@ -78,8 +74,19 @@
                 }
             });
         }
+
+        document.getElementById('filterLink').addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+
+            var filterContainer = document.getElementById('filterContainer');
+            if (filterContainer.style.display === 'none') {
+                filterContainer.style.display = 'block';
+            } else {
+                filterContainer.style.display = 'none';
+            }
+        });
     });
-    
+
     async function handleLike(entityType, entityId, likeType) {
         const response = await fetch('/like', {
             method: 'POST',
@@ -103,6 +110,12 @@
             const errorMessage = result.message || 'failed';
             alert(errorMessage)
         }
+    }
+
+    // clear button for the filter form
+    function clearForm() {
+        // reset the checkboxes and radio buttons
+        document.getElementById("filterForm").reset();
     }
 </script>
 {{end}}

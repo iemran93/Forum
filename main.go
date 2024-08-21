@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"forumProject/internal/database"
-	"forumProject/internal/functions"
 	"forumProject/internal/handlers"
 )
 
@@ -26,8 +25,8 @@ func main() {
 	http.HandleFunc("/post", handlers.PostHandler)
 	http.HandleFunc("/comment", handlers.CommentHandler)
 	http.HandleFunc("/like", handlers.LikeHandler)
-	http.HandleFunc("/filterCategory", functions.FilterByCategory)
-	http.HandleFunc("/filterByLikes", functions.FilterByLikes)
+	http.HandleFunc("/filter", handlers.FilterHandler)
+
 	// secured routes
 	http.Handle("/postform", handlers.SessionMiddleware(http.HandlerFunc(handlers.PostFormHandler)))
 	http.Handle("/postform/submit", handlers.SessionMiddleware(http.HandlerFunc(handlers.PostSubmitHandler)))

@@ -38,8 +38,3 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		jsonResponse(w, response, http.StatusMethodNotAllowed)
 	}
 }
-func jsonResponse(w http.ResponseWriter, data interface{}, status int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
-}

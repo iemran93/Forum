@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gofrs/uuid/v5"
 	"forumProject/internal/database"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func GenerateSessionID() (string, error) {

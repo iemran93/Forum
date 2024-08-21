@@ -19,15 +19,11 @@ type PageData struct {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// show/hide depend on session
 	loggedIn := false
-	var userID int
 
-	userID, err := SessionActive(r)
+	_, err := SessionActive(r)
 	if err == nil {
 		loggedIn = true
 	}
-
-	// to js/html logged
-	log.Println(userID)
 
 	// get all the posts
 	posts, err := database.GetPosts(0, "ALL")
@@ -61,7 +57,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// render the login page
 func LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		_, err := SessionActive(r)

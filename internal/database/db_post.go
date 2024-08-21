@@ -93,7 +93,8 @@ func GetPostsByUser(userID int) ([]models.Post, error) {
     posts.created_at, users.username
     FROM posts
     JOIN users ON posts.user_id = users.id
-    WHERE posts.user_id = ?`
+    WHERE posts.user_id = ?
+	ORDER BY posts.created_at DESC`
 
 	rows, err := DB.Query(sqlStm, userID)
 	if err != nil {
@@ -114,6 +115,46 @@ func GetPostsByUser(userID int) ([]models.Post, error) {
 		}
 		post.Categories = categories
 		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+func GetPostsByCategory(category string) ([]models.Post, error) {
+	sqlStm := `SELECT posts.id,
+        posts.user_id, posts.title,
+        posts.content, posts.likes,
+        posts.created_at, users.username
+    FROM posts
+    JOIN users ON posts.user_id = users.id
+    JOIN post_categories ON posts.id = post_categories.post_id
+    JOIN categories ON post_categories.category_id = categories.id
+    WHERE categories.name = ?
+	ORDER BY posts.created_at DESC`
+
+	rows, err := DB.Query(sqlStm, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var post models.Post
+		err := rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Content, &post.Likes, &post.CreatedAt, &post.Username)
+		if err != nil {
+			return nil, err
+		}
+		categories, err := GetCategoriesForPost(post.ID)
+		if err != nil {
+			return nil, err
+		}
+		post.Categories = categories
+		posts = append(posts, post)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return posts, nil

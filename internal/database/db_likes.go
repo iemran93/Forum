@@ -167,32 +167,34 @@ func DBGetLikes(entityType string, id int) ([]int, error) {
 	return likesArr, nil
 }
 
-// get user likes
-func GetUserLikes(userID int, likeType int) (map[int]bool, error) {
-	query := `SELECT post_id FROM likes WHERE user_id = ? AND like_type = ?`
-	rows, err := DB.Query(query, userID, likeType)
+// get likes table data
+func GetLikesTable() ([]models.Like, error) {
+	sqlStm := `SELECT * FROM likes`
+	rows, err := DB.Query(sqlStm)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	userLikes := make(map[int]bool)
+
+	var likes []models.Like
 	for rows.Next() {
-		var postID int
-		err := rows.Scan(&postID)
+		var like models.Like
+		err := rows.Scan(&like.ID, &like.UserID, &like.PostID, &like.CommentID, &like.LikeType, &like.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
-		userLikes[postID] = true
+		likes = append(likes, like)
 	}
-	return userLikes, nil
+
+	return likes, nil
 }
 
-func RefreshPostData(postID int) (models.Post, error) {
-	var post models.Post
-	query := `SELECT id, user_id, title, content, created_at, likes FROM posts WHERE id = ?`
-	err := DB.QueryRow(query, postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Content, &post.CreatedAt, &post.Likes)
-	if err != nil {
-		return post, err
-	}
-	return post, nil
-}
+// func RefreshPostData(postID int) (models.Post, error) {
+// 	var post models.Post
+// 	query := `SELECT id, user_id, title, content, created_at, likes FROM posts WHERE id = ?`
+// 	err := DB.QueryRow(query, postID).Scan(&post.ID, &post.UserID, &post.Title, &post.Content, &post.CreatedAt, &post.Likes)
+// 	if err != nil {
+// 		return post, err
+// 	}
+// 	return post, nil
+// }

@@ -38,8 +38,17 @@
         const formDataObject = Object.fromEntries(formData.entries());
 
         // Convert categories to an array of IDs
-        formDataObject.categories = Array.from(form.querySelectorAll('input[name="categories"]:checked'))
+        const selectedCategories = Array.from(form.querySelectorAll('input[name="categories"]:checked'))
             .map(checkbox => parseInt(checkbox.value));
+
+        if (selectedCategories.length === 0) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = 'Please select at least one category.';
+            errorElement.style.display = 'block';
+            return;
+        }
+
+        formDataObject.categories = selectedCategories;
 
         const response = await fetch('/postform/submit', {
             method: 'POST',

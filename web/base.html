@@ -1,12 +1,14 @@
 {{ define "base"}}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
     <div class="large-header" id="large-header"> <!-- Add this div with the class and ID -->
         <h1 class="main-title">Forum</h1> <!-- Add a main title for the large header -->
@@ -23,8 +25,9 @@
                 {{ end }}
                 {{ if .LoggedIn }}
                 <li><a href="/postform">Create Post</a></li>
-                <li><a href="/filterByLikes?showLiked=true">My Liked Posts</a></li>
                 {{ end }}
+                <!-- Block where additional content can be added to the nav base -->
+                {{ block "extraBase" .}}{{end}}
             </ul>
         </nav>
     </header>
@@ -36,5 +39,6 @@
     <!-- <script src="/js/animation.js"></script>
     <script src="/static/js/likes.js"></script> -->
 </body>
+
 </html>
 {{end}}
