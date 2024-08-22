@@ -6,12 +6,17 @@
 {{range .Posts}}
 <div class="post-card">
     <h2>{{.Title}}</h2>
-    <p><strong>Post ID:</strong> {{.ID}}</p>
-    <p><strong>User ID:</strong> {{.UserID}}</p>
-    <p><strong>Username:</strong>{{.Username}}</p>
-    <p><strong>Content:</strong> {{.Content}}</p>
-    <p><strong>Categories:</strong> {{range .Categories}} {{.Name}} {{end}}</p>
-    <p><strong>Created At:</strong> {{.CreatedAt}}</p>
+    <div class="post-meta">
+                <p class="user">{{.Username}}</p>
+                <p class="date">{{.CreatedAt}}</p>
+                <br>
+            </div>
+            <div class="categories">
+            {{range .Categories}}
+                <span>{{.Name}} </span>
+            {{end}}
+            </div>
+            <p class="content">{{.Content}}</p> 
 </div>
 <hr>
 
@@ -31,9 +36,11 @@
 <!-- display comments -->
 {{range .Comments}}
 <div id="comment-{{.ID}}" class="post-card">
-    <h3>{{.Username}}</h3>
-    <p>{{.CreatedAt}}</p>
-    <p>{{.Content}}</p>
+    <div class="post-meta">
+        <p class="user">{{.Username}}</p>
+    </div>
+    <p class="date" style="margin-bottom: 15px;">{{.CreatedAt}}</p>
+    <p class="content">{{.Content}}</p>
 
     <button onclick="handleLike('comment', '{{.ID}}', 'like')" class="like-button">Like</button>
     <span class="like-count">{{.Likes}}</span>

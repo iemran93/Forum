@@ -39,7 +39,7 @@ func CreateComment(comment models.Comment) error {
 	sqlStm := `INSERT INTO comments (
 	post_id, user_id, 
 	content, created_at) 
-	VALUES (?, ?, ?, datetime('now'))
+	VALUES (?, ?, ?, strftime('%Y-%m-%d %H:%M:%S', 'now', '+3 hours'))
 	`
 
 	stmt, err := DB.Prepare(sqlStm)

@@ -57,7 +57,7 @@ func CreatePost(postData models.Post) (int, error) {
 		return 0, err
 	}
 
-	result, err := tx.Exec("INSERT INTO posts (user_id, title, content, created_at) VALUES (?, ?, ?, datetime('now'))",
+	result, err := tx.Exec("INSERT INTO posts (user_id, title, content, created_at) VALUES (?, ?, ?, strftime('%Y-%m-%d %H:%M:%S', 'now', '+3 hours'))",
 		postData.UserID, postData.Title, postData.Content)
 	if err != nil {
 		tx.Rollback()

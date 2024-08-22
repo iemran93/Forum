@@ -120,10 +120,50 @@ nav ul li a {
 
 .post-card h2 {
   color: var(--color-primary);
+  margin-bottom: -10px; 
+  padding: 0; 
 }
 
 .post-card p {
   margin: 10px 0;
+  margin: 0px;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.post-card .user {
+  color: #b85a16;
+  margin-right: 10px;
+}
+
+
+.post-card .date {
+  text-decoration: underline;
+  font-size: 14px;
+  color: #374151;
+}
+
+.post-card .categories span {
+  background-color: #7d8ba4;
+  margin-right: 2px;
+  padding: 2px;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.post-card .categories {
+  margin-bottom: 20px;
+}
+
+.post-card .content {
+  margin-bottom: 20px;
 }
 
 .post-card .button {
@@ -145,7 +185,7 @@ nav ul li a {
   padding: 11px 23px;
   border-radius: 5px;
   cursor: pointer;
-  margin-right: -9px;
+  margin-right: -2px;
   color: var(--color-text-2);
   font-size: 15px;
 }
@@ -258,6 +298,14 @@ nav ul li a {
 .lns-checkbox {
   color: #374151;
 }
+
+.post-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+
 
 
 @media (max-width: 768px) {

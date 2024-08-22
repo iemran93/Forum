@@ -14,7 +14,7 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 		filterParams := r.URL.Query()
 		var filteredPosts []models.Post
-
+		log.Println(filterParams)
 		// filter by category
 		if _, exist := filterParams["categories"]; exist {
 			filteredPosts, err = filterByCategory(filterParams["categories"])

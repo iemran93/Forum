@@ -27,15 +27,22 @@
 </div>
 
 <section class="posts-section">
-    <h1>Forum Posts</h1>
     {{range .Posts}}
+    <a href="/post?id={{.ID}}" class="post-link">
     <article class="post-card">
         <div id="post-{{.ID}}">
             <h2>{{.Title}}</h2>
-            <p><strong>User:</strong> {{.Username}}</p>
-            <p><strong>Content:</strong> {{.Content}}</p>
-            <p><strong>Categories:</strong> {{range .Categories}}{{.Name}} {{end}}</p>
-            <p><strong>Created At:</strong> {{.CreatedAt}}</p>
+            <div class="post-meta">
+                <p class="user">{{.Username}}</p>
+                <p class="date">{{.CreatedAt}}</p>
+                <br>
+            </div>
+            <div class="categories">
+            {{range .Categories}}
+                <span>{{.Name}} </span>
+            {{end}}
+            </div>
+            <p class="content">{{.Content}}</p>
             <a href="/post?id={{.ID}}" class="button comment-button">Add comment</a>
             <button onclick="handleLike('post', '{{.ID}}', 'like')" class="like-button">Like</button>
             <span class="like-count">{{.Likes}}</span>
@@ -43,6 +50,7 @@
             <span class="dislike-count">{{.Dislikes}}</span>
         </div>
     </article>
+    </a>
     {{end}}
 </section>
 {{end}}

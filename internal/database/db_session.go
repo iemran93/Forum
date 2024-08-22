@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
-	"time"
 	"forumProject/internal/models"
+	"time"
 )
 
 func StoreSession(sessionID string, userID int, expiration time.Time) error {
@@ -51,13 +51,13 @@ func DeleteSession(sessionID string) error {
 }
 
 func DeleteUserSessions(userID int) error {
-    sqlStm := `DELETE FROM sessions WHERE user_id = ?`
-    stm, err := DB.Prepare(sqlStm)
-    if err != nil {
-        return err
-    }
-    defer stm.Close()
+	sqlStm := `DELETE FROM sessions WHERE user_id = ?`
+	stm, err := DB.Prepare(sqlStm)
+	if err != nil {
+		return err
+	}
+	defer stm.Close()
 
-    _, err = stm.Exec(userID)
-    return err
+	_, err = stm.Exec(userID)
+	return err
 }
