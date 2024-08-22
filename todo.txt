@@ -1,2 +1,3 @@
 - do the errors page
 - notification
+- fix the logout/login in pages
