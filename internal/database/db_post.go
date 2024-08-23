@@ -102,7 +102,7 @@ func GetPostsByUser(userID int) ([]models.Post, error) {
 	}
 	defer rows.Close()
 
-	var posts []models.Post
+	posts := make([]models.Post, 0)
 	for rows.Next() {
 		var post models.Post
 		err := rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Content, &post.Likes, &post.CreatedAt, &post.Username)

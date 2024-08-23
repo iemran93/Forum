@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/comment", handlers.CommentHandler)
 	http.HandleFunc("/like", handlers.LikeHandler)
 	http.HandleFunc("/filter", handlers.FilterHandler)
+	// http.HandleFunc("/error", handlers.ErrorHandler)
 
 	// secured routes
 	http.Handle("/postform", handlers.SessionMiddleware(http.HandlerFunc(handlers.PostFormHandler)))
@@ -43,7 +44,6 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
-	fmt.Println("localhost:8080/")
 	// listen and serve
 	http.ListenAndServe(":8080", nil)
 

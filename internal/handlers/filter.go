@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"forumProject/internal/database"
 	"forumProject/internal/models"
-	"log"
 	"net/http"
 	"text/template"
 )
@@ -14,26 +14,27 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 		filterParams := r.URL.Query()
 		var filteredPosts []models.Post
-		log.Println(filterParams)
+
 		// filter by category
 		if _, exist := filterParams["categories"]; exist {
 			filteredPosts, err = filterByCategory(filterParams["categories"])
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 				return
 			}
 		} else {
 			filteredPosts, err = database.GetPosts(0, "ALL")
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 				return
 			}
 		}
+
 		// filter by user likes/created
 		if _, exist := filterParams["byUser"]; exist {
 			userID, err := SessionActive(r)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				RenderErrorPage(w, http.StatusForbidden, "Forbidden: No session token")
 				return
 			}
 
@@ -47,19 +48,20 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 				case "crposts":
 					userPosts, err = database.GetPostsByUser(userID)
 					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
+						RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 						return
 					}
 					crposts = true
 				case "likeposts":
 					userLikes, err = filterByUserLiked(userID)
 					if err != nil {
-						http.Error(w, err.Error(), http.StatusInternalServerError)
+						RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 						return
 					}
 					likeposts = true
 				}
 			}
+
 			if crposts && likeposts {
 				filteredPosts = mergePosts(filteredPosts, userPosts, userLikes)
 			} else if crposts {
@@ -71,7 +73,8 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 
 		categories, err := database.GetCategories() // Implement this function
 		if err != nil {
-			log.Printf("Error fetching categories: %v", err)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+			return
 		}
 
 		loggedIn := false
@@ -89,14 +92,12 @@ func FilterHandler(w http.ResponseWriter, r *http.Request) {
 		// serve the template with the data
 		t, err := template.ParseFiles("web/index.html", "web/base.html")
 		if err != nil {
-			log.Printf("Template parsing error: %v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		err = t.Execute(w, pd)
 		if err != nil {
-			log.Printf("Template execution error: %v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 	}
@@ -145,8 +146,19 @@ func mergePosts(existing, createdPosts, likedPosts []models.Post) []models.Post 
 	filterPosts := func(posts []models.Post) {
 		for _, post := range posts {
 			for _, existingPost := range existing {
+				// if the post is already in the existing posts, add it to the filtered posts
+				// but only if it's not already in the filtered posts
 				if post.ID == existingPost.ID {
-					filteredPosts = append(filteredPosts, post)
+					exists := false
+					for _, filteredPost := range filteredPosts {
+						if filteredPost.ID == existingPost.ID {
+							exists = true
+							break
+						}
+					}
+					if !exists {
+						filteredPosts = append(filteredPosts, existingPost)
+					}
 				}
 			}
 		}

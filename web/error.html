@@ -1,0 +1,21 @@
+<!-- web/error.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <title>Error</title>
+</head>
+
+<body class="error-body">
+    <div class="error-container">
+        <h1>Oops</h1>
+        <p>Error {{.StatusCode}}</p>
+        <p>{{.Message}}</p>
+        <a href="/">Go to Home</a>
+    </div>
+</body>
+
+</html>

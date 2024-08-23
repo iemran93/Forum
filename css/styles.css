@@ -120,8 +120,8 @@ nav ul li a {
 
 .post-card h2 {
   color: var(--color-primary);
-  margin-bottom: -10px; 
-  padding: 0; 
+  margin-bottom: -10px;
+  padding: 0;
 }
 
 .post-card p {
@@ -303,6 +303,31 @@ nav ul li a {
   text-decoration: none;
   color: inherit;
   display: block;
+}
+
+.error-body {
+  background-color: var(--color-soft-red);
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-text-2);
+  padding: 10px;
+  font-size: 25px;
+}
+
+.error-container h1 {
+  padding: 50px;
+  font-size: 100px;
+}
+
+.error-container a {
+  background-color: var(--color-text-2);
+  border-radius: 5px;
+  padding: 10px;
+  text-decoration: none;
 }
 
 

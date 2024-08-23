@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"text/template"
@@ -15,8 +16,7 @@ func PostSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		var data models.Post
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		userID, err := SessionActive(r)
@@ -29,14 +29,15 @@ func PostSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		data.UserID = userID
 		postID, err := database.CreatePost(data)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		postIDs := strconv.Itoa(postID)
 
 		response := Response{Message: postIDs}
 		jsonResponse(w, response, http.StatusCreated)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
@@ -45,18 +46,18 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	i, err := strconv.Atoi(postID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		RenderErrorPage(w, http.StatusNotFound, fmt.Sprintf("Post not found: %v", err))
 		return
 	}
 
 	post, err := database.GetPosts(i, "SINGLE")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 	comments, err := database.GetComments(i)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 
@@ -72,6 +73,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		LoggedIn: loggedIn,
 	}
 
-	t, _ := template.ParseFiles("web/post.html", "web/base.html")
+	t, err := template.ParseFiles("web/post.html", "web/base.html")
+	if err != nil {
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+		return
+	}
 	t.Execute(w, pd)
 }

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"text/template"
 
@@ -28,13 +28,14 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// get all the posts
 	posts, err := database.GetPosts(0, "ALL")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 
 	categories, err := database.GetCategories() // Implement this function
 	if err != nil {
-		log.Printf("Error fetching categories: %v", err)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+		return
 	}
 
 	pd := PageData{
@@ -45,14 +46,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// serve the template with the data
 	t, err := template.ParseFiles("web/index.html", "web/base.html")
 	if err != nil {
-		log.Printf("Template parsing error: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 	err = t.Execute(w, pd)
 	if err != nil {
-		log.Printf("Template execution error: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 }
@@ -61,10 +60,14 @@ func LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		_, err := SessionActive(r)
 		if err == nil {
-			http.Error(w, "User logged in", http.StatusBadRequest)
+			RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", "User logged in"))
 			return
 		}
-		t, _ := template.ParseFiles("web/login.html", "web/base.html")
+		t, err := template.ParseFiles("web/login.html", "web/base.html")
+		if err != nil {
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+			return
+		}
 		data := struct {
 			LoggedIn bool
 		}{
@@ -80,18 +83,23 @@ func SignupFormHanlder(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		_, err := SessionActive(r)
 		if err == nil {
-			http.Error(w, "User logged in", http.StatusBadRequest)
+			RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", "User logged in"))
 			return
 		}
-		t, _ := template.ParseFiles("web/signup.html", "web/base.html")
 		data := struct {
 			LoggedIn bool
 		}{
 			LoggedIn: false,
 		}
+		t, err := template.ParseFiles("web/signup.html", "web/base.html")
+		if err != nil {
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+			return
+		}
 		t.Execute(w, data)
 	} else {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", "Invalid request method"))
+		return
 	}
 }
 
@@ -99,7 +107,7 @@ func PostFormHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		categories, err := database.GetCategories()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 
@@ -108,12 +116,17 @@ func PostFormHandler(w http.ResponseWriter, r *http.Request) {
 			LoggedIn   bool
 		}{
 			Categories: categories,
-			LoggedIn:   true, // Since this is a secured route, the user should be logged in
+			LoggedIn:   true, // Since this is a secured route, the user should be logged in. Really ? No way!
 		}
 
-		t, _ := template.ParseFiles("web/postform.html", "web/base.html")
+		t, err := template.ParseFiles("web/postform.html", "web/base.html")
+		if err != nil {
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
+			return
+		}
 		t.Execute(w, data)
 	} else {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", "Invalid request method"))
+		return
 	}
 }

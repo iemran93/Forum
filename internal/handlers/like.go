@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"forumProject/internal/database"
-	"log"
 	"net/http"
 )
 
@@ -24,9 +23,7 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&data)
 		likes, err := database.Liking(data.EntityType, data.Type, data.ID, userID)
 		if err != nil {
-			log.Println(err)
-			response := Response{Message: "Error processing like", Error: err.Error()}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		response := Response{

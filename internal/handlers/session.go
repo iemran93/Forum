@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -45,18 +46,18 @@ func SessionMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("Session_token")
 		if err != nil {
-			http.Error(w, "Forbidden: No session token", http.StatusForbidden)
+			RenderErrorPage(w, http.StatusForbidden, "Forbidden: No session token")
 			return
 		}
 
 		sessionID := cookie.Value
 		sessionData, exists, err := database.GetSession(sessionID)
 		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		if !exists || time.Now().After(sessionData.Expiration) {
-			http.Error(w, "Forbidden: Not exist or expired", http.StatusForbidden)
+			RenderErrorPage(w, http.StatusForbidden, "Forbidden: Not exist or expired")
 			return
 		}
 

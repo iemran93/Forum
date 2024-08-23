@@ -2,8 +2,11 @@ package database
 
 import (
 	"database/sql"
+	"forumProject/internal/models"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -56,20 +59,20 @@ func InitDB() {
 
 func CreateFakeData() {
 	// Create users
-	/* 	users := []models.User{
-	   		{Username: "alice", Email: "alice@example.com", Password: "alice"},
-	   		{Username: "bob", Email: "bob@example.com", Password: "bob"},
-	   		{Username: "charlie", Email: "charlie@example.com", Password: "charlie"},
-	   		{Username: "david", Email: "david@example.com", Password: "david"},
-	   		{Username: "eve", Email: "eve@example.com", Password: "eve"},
-	   	}
+	users := []models.User{
+		{Username: "alice", Email: "alice@example.com", Password: "alice"},
+		{Username: "bob", Email: "bob@example.com", Password: "bob"},
+		{Username: "charlie", Email: "charlie@example.com", Password: "charlie"},
+		{Username: "david", Email: "david@example.com", Password: "david"},
+		{Username: "eve", Email: "eve@example.com", Password: "eve"},
+	}
 
-	   	for _, user := range users {
-	   		err := CreateUser(user)
-	   		if err != nil {
-	   			log.Printf("Error creating user %s: %v", user.Username, err)
-	   		}
-	   	} */
+	for _, user := range users {
+		err := CreateUser(user)
+		if err != nil {
+			log.Printf("Error creating user %s: %v", user.Username, err)
+		}
+	}
 
 	// Insert categories
 	categories := []string{"Technology", "Sports", "Politics", "Entertainment", "Science"}
@@ -80,81 +83,79 @@ func CreateFakeData() {
 		}
 	}
 
-	/* 	// Insert posts and link to categories
-	   	posts := []struct {
-	   		Title    string
-	   		Content  string
-	   		Category string
-	   	}{
-	   		{"First Post", "This is the content of the first post", "Technology"},
-	   		{"Sports News", "Latest sports updates", "Sports"},
-	   		{"Political Debate", "Discussing current political issues", "Politics"},
-	   		{"Movie Review", "Review of the latest blockbuster", "Entertainment"},
-	   		{"Scientific Discovery", "New findings in quantum physics", "Science"},
-	   		{"Tech Trends", "Emerging technologies in 2023", "Technology"},
-	   		{"Olympic Results", "Medal tally and highlights", "Sports"},
-	   		{"Election Update", "Results from recent elections", "Politics"},
-	   		{"Celebrity Gossip", "Latest Hollywood news", "Entertainment"},
-	   		{"Space Exploration", "Updates on Mars missions", "Science"},
-	   	}
+	// Insert posts and link to categories
+	posts := []struct {
+		Title    string
+		Content  string
+		Category string
+	}{
+		{"First Post", "This is the content of the first post", "Technology"},
+		{"Sports News", "Latest sports updates", "Sports"},
+		{"Political Debate", "Discussing current political issues", "Politics"},
+		{"Movie Review", "Review of the latest blockbuster", "Entertainment"},
+		{"Scientific Discovery", "New findings in quantum physics", "Science"},
+		{"Tech Trends", "Emerging technologies in 2023", "Technology"},
+		{"Olympic Results", "Medal tally and highlights", "Sports"},
+		{"Election Update", "Results from recent elections", "Politics"},
+		{"Celebrity Gossip", "Latest Hollywood news", "Entertainment"},
+		{"Space Exploration", "Updates on Mars missions", "Science"},
+	}
 
-	   	for _, post := range posts {
-	   		userID := rand.Intn(len(users)) + 1
-	   		result, err := DB.Exec("INSERT INTO posts (user_id, title, content, created_at) VALUES (?, ?, ?, ?)",
-	   			userID, post.Title, post.Content, time.Now())
-	   		if err != nil {
-	   			log.Printf("Error inserting post %s: %v", post.Title, err)
-	   			continue
-	   		}
+	for _, post := range posts {
+		userID := rand.Intn(len(users)) + 1
+		result, err := DB.Exec("INSERT INTO posts (user_id, title, content, created_at) VALUES (?, ?, ?, strftime('%Y-%m-%d %H:%M:%S', 'now', '+3 hours'))",
+			userID, post.Title, post.Content, time.Now())
+		if err != nil {
+			log.Printf("Error inserting post %s: %v", post.Title, err)
+			continue
+		}
 
-	   		postID, _ := result.LastInsertId()
+		postID, _ := result.LastInsertId()
 
-	   		var categoryID int
-	   		err = DB.QueryRow("SELECT id FROM categories WHERE name = ?", post.Category).Scan(&categoryID)
-	   		if err != nil {
-	   			log.Printf("Error getting category ID for %s: %v", post.Category, err)
-	   			continue
-	   		}
+		var categoryID int
+		err = DB.QueryRow("SELECT id FROM categories WHERE name = ?", post.Category).Scan(&categoryID)
+		if err != nil {
+			log.Printf("Error getting category ID for %s: %v", post.Category, err)
+			continue
+		}
 
-	   		_, err = DB.Exec("INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)", postID, categoryID)
-	   		if err != nil {
-	   			log.Printf("Error linking post to category: %v", err)
-	   		}
-	   	} */
+		_, err = DB.Exec("INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)", postID, categoryID)
+		if err != nil {
+			log.Printf("Error linking post to category: %v", err)
+		}
+	}
 
-	/* 	// Insert comments
-	   	comments := []string{
-	   		"Great post!",
-	   		"I disagree with this.",
-	   		"Interesting perspective.",
-	   		"Thanks for sharing!",
-	   		"Can you elaborate more?",
-	   	}
+	// Insert comments
+	comments := []string{
+		"Great post!",
+		"I disagree with this.",
+		"Interesting perspective.",
+		"Thanks for sharing!",
+		"Can you elaborate more?",
+	}
 
-	   	for i := 1; i <= len(users)*2; i++ {
-	   		postID := rand.Intn(len(posts)) + 1
-	   		userID := rand.Intn(len(users)) + 1
-	   		content := comments[rand.Intn(len(comments))]
+	for i := 1; i <= len(users)*2; i++ {
+		postID := rand.Intn(len(posts)) + 1
+		userID := rand.Intn(len(users)) + 1
+		content := comments[rand.Intn(len(comments))]
 
-	   		_, err := DB.Exec("INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)",
-	   			postID, userID, content, time.Now())
-	   		if err != nil {
-	   			log.Printf("Error inserting comment: %v", err)
-	   		}
-	   	}
+		_, err := DB.Exec("INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, strftime('%Y-%m-%d %H:%M:%S', 'now', '+3 hours'))",
+			postID, userID, content, time.Now())
+		if err != nil {
+			log.Printf("Error inserting comment: %v", err)
+		}
+	}
 
-	   	// Insert likes and dislikes
-	   	for i := 1; i <= len(users)*2; i++ {
-	   		userID := rand.Intn(len(users)) + 1
-	   		postID := rand.Intn(len(posts)) + 1
-	   		likeType := []int{1, -1}[rand.Intn(2)]
+	// Insert likes and dislikes
+	for i := 1; i <= len(users)*2; i++ {
+		userID := rand.Intn(len(users)) + 1
+		postID := rand.Intn(len(posts)) + 1
+		likeType := []int{1, -1}[rand.Intn(2)]
 
-	   		_, err := DB.Exec("INSERT INTO likes (user_id, post_id, like_type, created_at) VALUES (?, ?, ?, ?)",
-	   			userID, postID, likeType, time.Now())
-	   		if err != nil {
-	   			log.Printf("Error inserting like: %v", err)
-	   		}
-	   	} */
-
-	log.Println("Fake data created successfully")
+		_, err := DB.Exec("INSERT INTO likes (user_id, post_id, like_type, created_at) VALUES (?, ?, ?, ?)",
+			userID, postID, likeType, time.Now())
+		if err != nil {
+			log.Printf("Error inserting like: %v", err)
+		}
+	}
 }

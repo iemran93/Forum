@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -25,14 +26,12 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		err = json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			response := Response{Message: "Invalid request data"}
-			jsonResponse(w, response, http.StatusBadRequest)
+			RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", err))
 			return
 		}
 		postID, err := strconv.Atoi(data.PostID)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		comment := models.Comment{
@@ -42,8 +41,7 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		err = database.CreateComment(comment)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 

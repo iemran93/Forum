@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -33,8 +34,7 @@ func LoginSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		var data models.User
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", err))
 			return
 		}
 		user, err := AuthenticateUser(data.Username, data.Password)
@@ -46,16 +46,14 @@ func LoginSubmitHandler(w http.ResponseWriter, r *http.Request) {
 			// Delete any existing sessions for this user
 			err = database.DeleteUserSessions(user)
 			if err != nil {
-				response := Response{Message: "Internal server error"}
-				jsonResponse(w, response, http.StatusInternalServerError)
+				RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 				return
 			}
 
 			// Create new session
 			cookie, err := SetCookie(user)
 			if err != nil {
-				response := Response{Message: "Internal server error"}
-				jsonResponse(w, response, http.StatusInternalServerError)
+				RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 				return
 			}
 			http.SetCookie(w, &cookie)
@@ -73,8 +71,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		var data models.User
 		err := json.NewDecoder(r.Body).Decode(&data)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 
@@ -93,8 +90,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 
 		users, err := database.GetUsers()
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		for _, user := range users {
@@ -112,8 +108,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 
 		hash, err := functions.HashPassword(data.Password)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 
@@ -121,8 +116,7 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 
 		err = database.CreateUser(data)
 		if err != nil {
-			response := Response{Message: "Internal server error"}
-			jsonResponse(w, response, http.StatusInternalServerError)
+			RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 			return
 		}
 		response := Response{Message: "Signup successful"}
@@ -136,14 +130,14 @@ func SignupSubmitHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("Session_token")
 	if err != nil {
-		http.Error(w, "No session found", http.StatusBadRequest)
+		RenderErrorPage(w, http.StatusBadRequest, fmt.Sprintf("Invalid request data: %v", err))
 		return
 	}
 
 	sessionID := cookie.Value
 	err = database.DeleteSession(sessionID)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		RenderErrorPage(w, http.StatusInternalServerError, fmt.Sprintf("Internal server error: %v", err))
 		return
 	}
 
