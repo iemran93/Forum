@@ -3,22 +3,24 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutLink) {
         logoutLink.addEventListener('click', async function (event) {
             event.preventDefault();
-            try {
-                const response = await fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+            const result = await notifyConfirm('Are you sure you want to logout?');
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        notify('Logout failed: ' + result.message);
                     }
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    alert(result.message);
-                    window.location.href = '/';
-                } else {
-                    alert('Logout failed: ' + result.message);
+                } catch (error) {
+                    console.error('Error:', error);
                 }
-            } catch (error) {
-                console.error('Error:', error);
             }
         });
     }
@@ -28,12 +30,21 @@ function notify(mesg) {
     Swal.fire(mesg);
 }
 
-function notifysuccess(mesg) {
+function notifySuccess(mesg) {
     Swal.fire({
         position: "top-end",
         icon: "success",
-        title: "Your work has been saved",
+        title: mesg,
         showConfirmButton: false,
         timer: 1500
       });
+}
+
+function notifyConfirm(mesg) {
+    return Swal.fire({
+        title: mesg,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    });
 }

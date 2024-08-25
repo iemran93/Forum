@@ -17,9 +17,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const result = await response.json();
 
         if (response.ok) {
-            alert('Comment added successfully');
-            // redirect to the post
-            window.location.href = '/post?id=' + formDataObject.post_id;
+            notifySuccess('Comment added successfully');
+            setTimeout(() => {
+                window.location.href = '/post?id=' + formDataObject.post_id;
+            }, 1500);
         } else {
             const errorMessage = result.message || 'failed';
             const errorElement = document.getElementById('error-message');
