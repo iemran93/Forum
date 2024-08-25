@@ -330,7 +330,30 @@ nav ul li a {
   text-decoration: none;
 }
 
+.inp {
+  font-size: 14px;
+  height:40px;
+  line-height:40px;
+  padding:0 5px;
+}
 
+.inp-area {
+  font-size: 14px;
+  height:40px;
+  line-height:40px;
+  padding:0 5px;
+}
+
+.error-message {
+  margin-top: 15px;
+  padding: 10px;
+  color: #ff0000;
+  text-align: center;
+}
+
+.swal2-confirm {
+  background-color: #3b82f6;
+}
 
 
 @media (max-width: 768px) {

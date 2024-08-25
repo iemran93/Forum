@@ -16,7 +16,7 @@ async function handleSignup(event) {
     const result = await response.json();
 
     if (response.ok) {
-        alert('Signup successful');
+        notifysuccess('Signup successful');
         // Optionally, redirect to another page
         window.location.href = '/';
     } else {

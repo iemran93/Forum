@@ -55,6 +55,6 @@ async function handleLike(entityType, entityId, likeType) {
         dislikeCount.innerText = `${dislikes}`
     } else {
         const errorMessage = result.message || 'failed';
-        alert(errorMessage)
+        notify(errorMessage);
     }
 }

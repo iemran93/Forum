@@ -16,7 +16,7 @@ async function handleLogin(event) {
     const result = await response.json();
 
     if (response.ok) {
-        alert('Login successful');
+        notifysuccess('Login successful');
         // Optionally, redirect to another page
         window.location.href = '/';
     } else {

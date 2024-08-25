@@ -23,3 +23,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function notify(mesg) {
+    Swal.fire(mesg);
+}
+
+function notifysuccess(mesg) {
+    Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+        timer: 1500
+      });
+}
