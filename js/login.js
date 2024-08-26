@@ -16,9 +16,10 @@ async function handleLogin(event) {
     const result = await response.json();
 
     if (response.ok) {
-        alert('Login successful');
-        // Optionally, redirect to another page
-        window.location.href = '/';
+        notifySuccess("Login successful");
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1500);        
     } else {
         const errorMessage = result.message || 'Signup failed';
         const errorElement = document.getElementById('error-message');

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
 
 	"forumProject/internal/database"
@@ -23,6 +24,15 @@ func PostSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			response := Response{Message: err.Error()}
 			jsonResponse(w, response, http.StatusForbidden)
+			return
+		}
+
+		// handle empty title or content
+		title := strings.TrimSpace(data.Title)
+		content := strings.TrimSpace(data.Content)
+		if title == "" || content == "" {
+			response := Response{Message: "Title and content cannot be empty"}
+			jsonResponse(w, response, http.StatusBadRequest)
 			return
 		}
 

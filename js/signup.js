@@ -16,9 +16,10 @@ async function handleSignup(event) {
     const result = await response.json();
 
     if (response.ok) {
-        alert('Signup successful');
-        // Optionally, redirect to another page
-        window.location.href = '/';
+        notifySuccess('Signup successful');
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 1500);
     } else {
         const errorMessage = result.message || 'Signup failed';
         const errorElement = document.getElementById('error-message');

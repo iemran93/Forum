@@ -124,7 +124,7 @@ func filterByUserLiked(userID int) ([]models.Post, error) {
 	}
 
 	for _, like := range likesData {
-		if like.UserID == userID && like.LikeType == 1 {
+		if like.UserID == userID && like.LikeType == 1 && like.PostID != nil {
 			post, err := database.GetPosts(*like.PostID, "SINGLE")
 			if err != nil {
 				return nil, err

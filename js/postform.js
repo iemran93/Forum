@@ -28,9 +28,10 @@ async function handlePost(event) {
     const result = await response.json();
 
     if (response.ok) {
-        alert('Post it successfully');
-        // redirect to the post
-        window.location.href = '/post?id=' + result.message;
+        notifySuccess('Post added successfully');
+        setTimeout(() => {
+            window.location.href = '/post?id=' + result.message;
+        }, 1500);
     } else {
         const errorMessage = result.message || 'Signup failed';
         const errorElement = document.getElementById('error-message');

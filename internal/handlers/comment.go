@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"forumProject/internal/database"
 	"forumProject/internal/models"
@@ -38,6 +39,12 @@ func CommentHandler(w http.ResponseWriter, r *http.Request) {
 			UserID:  userID,
 			PostID:  postID,
 			Content: data.Content,
+		}
+		content := strings.TrimSpace(data.Content)
+		if content == "" {
+			response := Response{Message: "Comment content cannot be empty!"}
+			jsonResponse(w, response, http.StatusBadRequest)
+			return
 		}
 		err = database.CreateComment(comment)
 		if err != nil {
