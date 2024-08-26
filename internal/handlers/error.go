@@ -11,24 +11,28 @@ type ErrorData struct {
 	Message    string
 }
 
+var errorTemplate *template.Template
+
+func init() {
+	var err error
+	errorTemplate, err = template.ParseFiles("web/error.html")
+	if err != nil {
+		log.Fatalf("Failed to parse error template: %v", err)
+	}
+}
+
 func RenderErrorPage(w http.ResponseWriter, statusCode int, message string) {
-	w.WriteHeader(statusCode)
 	errorData := ErrorData{
 		StatusCode: statusCode,
 		Message:    message,
 	}
 
-	t, err := template.ParseFiles("web/error.html")
-	if err != nil {
-		log.Printf("Template parsing error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
+	w.WriteHeader(statusCode)
 
-	err = t.Execute(w, errorData)
+	err := errorTemplate.Execute(w, errorData)
+
 	if err != nil {
 		log.Printf("Template execution error: %v", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 }
