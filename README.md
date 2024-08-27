@@ -1,4 +1,4 @@
-🗨️ Forum Web Application 🗨️
+## 🗨️ Forum Web Application 🗨️
 
 Welcome to the Forum Web Application project! This document will guide you through the setup and features of the forum, including how to use Docker to run your application, and the key functionalities you'll find in this web forum.
 🎯 Objectives
