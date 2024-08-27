@@ -17,6 +17,10 @@ type PageData struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		RenderErrorPage(w, http.StatusNotFound, fmt.Sprintf("Page not Found"))
+		return
+	}
 	// show/hide depend on session
 	loggedIn := false
 

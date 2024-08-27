@@ -27,6 +27,8 @@ func main() {
 	http.HandleFunc("/like", handlers.LikeHandler)
 	http.HandleFunc("/filter", handlers.FilterHandler)
 
+	// http.HandleFunc("/error", handlers.ErrorHandler)
+
 	// secured routes
 	http.Handle("/postform", handlers.SessionMiddleware(http.HandlerFunc(handlers.PostFormHandler)))
 	http.Handle("/postform/submit", handlers.SessionMiddleware(http.HandlerFunc(handlers.PostSubmitHandler)))
