@@ -30,7 +30,6 @@ func RenderErrorPage(w http.ResponseWriter, statusCode int, message string) {
 	w.WriteHeader(statusCode)
 
 	err := errorTemplate.Execute(w, errorData)
-
 	if err != nil {
 		log.Printf("Template execution error: %v", err)
 		return

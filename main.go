@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/comment", handlers.CommentHandler)
 	http.HandleFunc("/like", handlers.LikeHandler)
 	http.HandleFunc("/filter", handlers.FilterHandler)
+
 	// http.HandleFunc("/error", handlers.ErrorHandler)
 
 	// secured routes
