@@ -21,6 +21,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		RenderErrorPage(w, http.StatusNotFound, fmt.Sprintf("Page not Found"))
 		return
 	}
+
 	// show/hide depend on session
 	loggedIn := false
 
