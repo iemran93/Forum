@@ -1,7 +1,6 @@
 ## 🗨️ Forum Web Application 🗨️
 
 Welcome to the Forum Web Application project! This document will guide you through the setup and features of the forum, including how to use Docker to run your application, and the key functionalities you'll find in this web forum.
-🎯 Objectives
 
 The Forum Web Application enables:
 
@@ -10,7 +9,7 @@ The Forum Web Application enables:
     Liking and Disliking posts and comments.
     Filtering posts based on different criteria.
 
-💾 Database
+Database
 
 We use SQLite to manage our data, including users, posts, comments, and more. SQLite provides an efficient way to handle local data storage. Key SQL operations include:
 
@@ -29,7 +28,7 @@ Based on the entity-relationship diagram, you should structure your database for
     Categories: to associate posts with categories.
     Likes/Dislikes: to track user feedback on posts and comments.
 
-🔐 Authentication
+Authentication
 User Registration
 
 Users can register with:
@@ -47,19 +46,19 @@ Registered users can log in to create posts and comments. Sessions are managed v
     Expiration: Each session has a defined lifespan.
     UUID: Optional, but recommended for session management.
 
-💬 Communication
+Communication
 Posts & Comments
 
     Creation: Only registered users can create posts and comments.
     Visibility: All users can view posts and comments.
     Categories: Users can associate posts with one or more categories.
 
-👍👎 Likes and Dislikes
+Likes and Dislikes
 
     Registered Users Only: Only users who are logged in can like or dislike posts and comments.
     Visibility: Like and dislike counts are visible to all users.
 
-🔍 Filter
+Filter
 
 Registered users can filter posts by:
 
@@ -67,7 +66,7 @@ Registered users can filter posts by:
     Created Posts: Show posts created by the logged-in user.
     Liked Posts: Filter posts liked by the logged-in user.
 
-🐳 Docker
+Docker
 
 This project uses Docker for containerization. To run your forum application with Docker:
 
@@ -90,5 +89,3 @@ go run main.go # this will start the web
 - [@falsayya](https://www.github.com/falsayya)
 - [@oabdulra](https://www.github.com/oabdulra)
 - [@mohani](https://www.github.com/mohani)
-
-```
